@@ -1,19 +1,19 @@
 from lark import Lark, Transformer
-from .dataclasses import JunkDataClass, JunkBaseDataClassMeta
+from .dataclasses import JunkpyDataClass, JunkpyBaseDataClassMeta
 
 
 
-class JunkTransformer(Transformer):
+class JunkpyTransformer(Transformer):
 	def __init__(self, data_classes:list=None):
 		super().__init__()
 		
 		self._data_class_keyword_dict = {}
-		init_data_classes = JunkBaseDataClassMeta.BASE_DATA_CLASSES
+		init_data_classes = JunkpyBaseDataClassMeta.BASE_DATA_CLASSES
 		if(data_classes is not None):
 			init_data_classes += data_classes if(isinstance(data_classes, list)) else [data_classes]
 	
 		for data_class in init_data_classes:
-			if(issubclass(data_class, JunkDataClass)):
+			if(issubclass(data_class, JunkpyDataClass)):
 				self._data_class_keyword_dict[data_class.KEYWORD] = data_class
 				
 			else:
@@ -52,8 +52,8 @@ class JunkTransformer(Transformer):
 
 
 
-class Junk:
-	__JUNK_GRAMMAR = r"""
+class Junkpy:
+	__JUNKPY_GRAMMAR = r"""
 		?value: dict
 			  | list
 			  | string
@@ -96,7 +96,7 @@ class Junk:
 	
 
 	def __init__(self, data_classes:list=None):
-		self.__parser = Lark(self.__JUNK_GRAMMAR, start='value', parser='lalr', transformer=JunkTransformer(data_classes))
+		self.__parser = Lark(self.__JUNKPY_GRAMMAR, start='value', parser='lalr', transformer=JunkpyTransformer(data_classes))
 
 	
 	def loads(self, string):
