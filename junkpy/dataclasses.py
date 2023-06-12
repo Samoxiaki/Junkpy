@@ -1,6 +1,6 @@
 from decimal import Decimal
 from datetime import datetime, timedelta, date, time
-from path import Path
+from pathlib import Path
 from re import Pattern
 import os
 import re
@@ -8,11 +8,33 @@ import re
 
 
 class JunkpyDataClass:
+	"""
+	Represents a data class used in Junkpy for parsing and loading data.
+
+	Attributes:
+		CLASS (type): The Python object type to be returned by the data class.
+		KEYWORD (str): The keyword used to identify this data class in Junkpy syntax.
+
+	Methods:
+		load(cls, value, **kwargs): A class method that loads the given value and returns a python object of the type defined by CLASS attribute.
+
+	"""
 	CLASS = None
 	KEYWORD = None
 	
 	@classmethod
-	def load(cls, value, **kwargs):
+	def load(cls, value: object, **kwargs) -> object:
+		"""
+		Loads the given value and returns an instance of a python object.
+
+		Args:
+			value: The parsed value to be modified or loaded.
+			**kwargs: Modifiers included when forcing the type in a Junkpy file.
+
+		Returns:
+			object: An instance of the modified or loaded value.
+
+		"""
 		return cls.CLASS(value)
 
 

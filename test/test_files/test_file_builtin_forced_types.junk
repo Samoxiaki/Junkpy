@@ -1,0 +1,26 @@
+{
+	"string": (string) 123,
+	"regex": (regex) "[A-Za-z]+[0-9]*",
+	"env": (env) "$HOME",
+	"path": (path) "$HOME/file.txt",
+	"int": (int) 3.12345,
+	"bin": (bin) "1101101",
+	"octal": (octal) "34501",
+	"hex": (hex) "33FF856",
+	"complex": (complex) "2+17j",
+	"float": (float) 100,
+	"decimal": (decimal) "2.999999999999999999",
+	"bool": (bool) 1,
+	"set": (set) [
+		1,
+		2,
+		2,
+		3
+	],
+	"timestamp": (timestamp) 1678123123.12345,
+	"timedelta": (timedelta) 600,
+	"time": (time) "12:08:14",
+	"date": (date) "2023-12-01",
+	"datetime": (datetime) "2023-12-01 12:08:14.123",
+	"chained": (string) (float) (int) 123.456
+}

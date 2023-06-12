@@ -1,3 +1,4 @@
+from typing import List, Optional, Type, IO
 from lark import Lark, Transformer
 from .dataclasses import JunkpyDataClass, JunkpyBaseDataClassMeta
 
@@ -33,15 +34,21 @@ class JunkpyTransformer(Transformer):
 		if(data_class is None):
 			raise ValueError(f"Unsupported type <{type_cls}>")
 		
-		return data_class.load(value, **type_kwargs)
+		loaded_value = data_class.load(value, **type_kwargs)
+		if(not isinstance(loaded_value, data_class.CLASS)):
+			raise TypeError(f"Unexpected output type for data class ({type_cls}). Expected {data_class.CLASS}, got {type(loaded_value)}")
+			
+		return loaded_value
 	
-
+	
 	list = list
+	empty_list = lambda self, value: list()
 	dict = dict
+	empty_dict = lambda self, value: dict()
 	pair = tuple
 	type_option = tuple
 	type_kwargs = dict
-	null_pair = lambda self, value: (value[0], None)
+	null_pair = lambda self, value: (value[0], None)		
 	var_name = lambda self, value: str(value[0])
 	string = lambda self, value: value[0][1:-1]
 	float_n = lambda self, value: float(value[0])
@@ -55,21 +62,26 @@ class JunkpyTransformer(Transformer):
 class Junkpy:
 	__JUNKPY_GRAMMAR = r"""
 		?value: dict
-			  | list
-			  | string
-			  | integer_n
-			  | float_n
-			  | true
-			  | false
-			  | null
+			| empty_dict
+			| list
+			| empty_list
+			| string
+			| integer_n
+			| float_n
+			| true
+			| false
+			| null
 		
 		typed_value: "(" ((string | var_name) | (string | var_name) type_kwargs) ")" (value | typed_value | typed_null_value)
 		typed_null_value: "(" ((string | var_name) | (string | var_name) type_kwargs) ")" 
 		pair : (string | var_name) ":" (value | typed_value | typed_null_value)
 		null_pair : (string | var_name) ":" 
 		
-		dict : "{" [(pair|null_pair) ("," (pair|null_pair))*] ("}" | "," "}")
-		list : "[" [(value | typed_value | typed_null_value) ("," (value | typed_value | typed_null_value))*] ("]" | "," "]")
+		dict : "{" (pair|null_pair) ("," (pair|null_pair))* ("}" | "," "}")
+		empty_dict : "{" "}"
+		
+		list : "[" (value | typed_value | typed_null_value) ("," (value | typed_value | typed_null_value))* ("]" | "," "]")
+		empty_list : "[" "]"
 		
 		integer_n: SIGNED_INT
 		float_n: SIGNED_FLOAT
@@ -95,20 +107,57 @@ class Junkpy:
 	"""
 	
 
-	def __init__(self, data_classes:list=None):
+	def __init__(self, data_classes: Optional[List[Type[JunkpyDataClass]]] = None):
+		"""
+		Initializes the Junkpy parser.
+
+		Args:
+			data_classes (Optional[List[JunkpyDataClass]]): List of data classes to be used for typed value conversion.
+		"""
+		
 		self.__parser = Lark(self.__JUNKPY_GRAMMAR, start='value', parser='lalr', transformer=JunkpyTransformer(data_classes))
 
 	
-	def loads(self, string):
+	def loads(self, string: str) -> object:
+		"""
+		Parses a Junkpy string and returns the corresponding Python object.
+
+		Args:
+			string (str): The Junkpy string to parse.
+
+		Returns:
+			object: The parsed Python object.
+		"""
+		
 		return self.__parser.parse(string)
 		
 	
-	def load(self, fp):
+	def load(self, fp: IO) -> object:
+		"""
+		Parses a Junkpy file-like object and returns the corresponding Python object.
+
+		Args:
+			fp (file-like): The file-like object containing the Junkpy data.
+
+		Returns:
+			object: The parsed Python object.
+		"""
+		
 		with fp as opened_fp:
 			return self.loads(opened_fp.read())	
 		
 		
-	def load_file(self, file_path):
+	def load_file(self, file_path: str) -> object:
+		"""
+		Parses a Junkpy file and returns the corresponding Python object.
+
+		Args:
+			file_path (str): The path to the Junkpy file.
+
+		Returns:
+			object: The parsed Python object.
+		"""
+		
 		return self.load(open(file_path, "rt"))
 
 
