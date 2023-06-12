@@ -1,0 +1,18 @@
+{
+	"string": "123",
+	"int": 123,
+	"float": 123.456,
+	"bool": true,
+	"list": [
+		1,
+		2,
+		3
+	],
+	"empty_list": [],
+	"dict": {
+		"1":1, 
+		"2":2
+	},
+	"empty_dict": {},
+	"null": null
+}

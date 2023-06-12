@@ -1,9 +1,9 @@
-from .dataclasses import JunkDataClass
+from .dataclasses import JunkpyDataClass
 from decimal import Decimal
 
 
 
-class JunkBaseMagnitudeDataClass(JunkDataClass):
+class JunkpyBaseMagnitudeDataClass(JunkpyDataClass):
 	CLASS = Decimal
 	KEYWORD = None
 	DEFAULT_UNIT = None
@@ -18,7 +18,7 @@ class JunkBaseMagnitudeDataClass(JunkDataClass):
 		
 	
 	
-class JunkMassDataClass(JunkBaseMagnitudeDataClass):
+class JunkpyMassDataClass(JunkpyBaseMagnitudeDataClass):
 	KEYWORD = "mass"
 	DEFAULT_UNIT = "g"
 	UNITS = {
@@ -39,7 +39,7 @@ class JunkMassDataClass(JunkBaseMagnitudeDataClass):
 	
 	
 	
-class JunkDistanceDataClass(JunkBaseMagnitudeDataClass):
+class JunkpyDistanceDataClass(JunkpyBaseMagnitudeDataClass):
 	KEYWORD = "distance"
 	DEFAULT_UNIT = "m"
 	UNITS = {
@@ -65,7 +65,7 @@ class JunkDistanceDataClass(JunkBaseMagnitudeDataClass):
 	
 	
 	
-class JunkVolumeDataClass(JunkBaseMagnitudeDataClass):
+class JunkpyVolumeDataClass(JunkpyBaseMagnitudeDataClass):
 	KEYWORD = "volume"
 	DEFAULT_UNIT = "l"
 	UNITS = {
@@ -85,7 +85,7 @@ class JunkVolumeDataClass(JunkBaseMagnitudeDataClass):
 	
 	
 	
-class JunkSpeedDataClass(JunkBaseMagnitudeDataClass):
+class JunkpySpeedDataClass(JunkpyBaseMagnitudeDataClass):
 	KEYWORD = "speed"
 	DEFAULT_UNIT = "m/s"
 	UNITS = {

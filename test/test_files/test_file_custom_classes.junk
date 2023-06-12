@@ -1,0 +1,13 @@
+{
+	"test1": (custom1) 88.8,
+	"test2": (custom2, min=100) 33,
+	"test3": (custom2, min=100, max=120) 50,
+	"test4": (custom2, min=120, max=100) 50,
+	"test5": (custom2, min=100, max=200) 50,
+	"test6": (custom3) 50,
+	"test7": (custom3, add=10, mul=2) 50,
+	"test8": (custom3, add=10, mul=2),
+	"test9": (custom3, add=10, sub=5, mul=2, div=2),
+	"test10": (custom2, min=0, max=500) (custom3, add=10, mul=2) 50,
+	"test11": (custom2, min=100, max=200) (custom3, add=100, mul=2) 50,
+}

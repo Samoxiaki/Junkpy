@@ -1,23 +1,45 @@
 from decimal import Decimal
 from datetime import datetime, timedelta, date, time
-from path import Path
+from pathlib import Path
 from re import Pattern
 import os
 import re
 
 
 
-class JunkDataClass:
+class JunkpyDataClass:
+	"""
+	Represents a data class used in Junkpy for parsing and loading data.
+
+	Attributes:
+		CLASS (type): The Python object type to be returned by the data class.
+		KEYWORD (str): The keyword used to identify this data class in Junkpy syntax.
+
+	Methods:
+		load(cls, value, **kwargs): A class method that loads the given value and returns a python object of the type defined by CLASS attribute.
+
+	"""
 	CLASS = None
 	KEYWORD = None
 	
 	@classmethod
-	def load(cls, value, **kwargs):
+	def load(cls, value: object, **kwargs) -> object:
+		"""
+		Loads the given value and returns an instance of a python object.
+
+		Args:
+			value: The parsed value to be modified or loaded.
+			**kwargs: Modifiers included when forcing the type in a Junkpy file.
+
+		Returns:
+			object: An instance of the modified or loaded value.
+
+		"""
 		return cls.CLASS(value)
 
 
 
-class JunkBaseDataClassMeta(type):
+class JunkpyBaseDataClassMeta(type):
 	BASE_DATA_CLASSES = []
 	
 	@classmethod
@@ -28,25 +50,25 @@ class JunkBaseDataClassMeta(type):
 
 
 
-class JunkBaseDataClass(JunkDataClass, metaclass=JunkBaseDataClassMeta):
+class JunkpyBaseDataClass(JunkpyDataClass, metaclass=JunkpyBaseDataClassMeta):
 	pass
 	
 
 
 # Numeric
-class JunkBoolDataClass(JunkBaseDataClass):
+class JunkpyBoolDataClass(JunkpyBaseDataClass):
 	CLASS = bool
 	KEYWORD = "bool"
 		
 		
 	
-class JunkIntegerDataClass(JunkBaseDataClass):
+class JunkpyIntegerDataClass(JunkpyBaseDataClass):
 	CLASS = int
 	KEYWORD = "int"
 	
 	
 	
-class JunkHexDataClass(JunkBaseDataClass):
+class JunkpyHexDataClass(JunkpyBaseDataClass):
 	CLASS = int
 	KEYWORD = "hex"
 	
@@ -56,7 +78,7 @@ class JunkHexDataClass(JunkBaseDataClass):
 		
 		
 		
-class JunkOctalDataClass(JunkBaseDataClass):
+class JunkpyOctalDataClass(JunkpyBaseDataClass):
 	CLASS = int
 	KEYWORD = "octal"
 	
@@ -66,7 +88,7 @@ class JunkOctalDataClass(JunkBaseDataClass):
 		
 		
 		
-class JunkBinaryDataClass(JunkBaseDataClass):
+class JunkpyBinaryDataClass(JunkpyBaseDataClass):
 	CLASS = int
 	KEYWORD = "bin"
 	
@@ -76,39 +98,39 @@ class JunkBinaryDataClass(JunkBaseDataClass):
 	
 	
 	
-class JunkComplexDataClass(JunkBaseDataClass):
+class JunkpyComplexDataClass(JunkpyBaseDataClass):
 	CLASS = complex
 	KEYWORD = "complex"
 	
 	
 	
-class JunkFloatDataClass(JunkBaseDataClass):
+class JunkpyFloatDataClass(JunkpyBaseDataClass):
 	CLASS = float
 	KEYWORD = "float"
 	
 
 
-class JunkDecimalDataClass(JunkBaseDataClass):
+class JunkpyDecimalDataClass(JunkpyBaseDataClass):
 	CLASS = Decimal
 	KEYWORD = "decimal"
 	
 	
 
 # List
-class JunkSetDataClass(JunkBaseDataClass):
+class JunkpySetDataClass(JunkpyBaseDataClass):
 	CLASS = set
 	KEYWORD = "set"
 	
 
 
 # String
-class JunkStringDataClass(JunkBaseDataClass):
+class JunkpyStringDataClass(JunkpyBaseDataClass):
 	CLASS = str
 	KEYWORD = "string"
 	
 	
 	
-class JunkRegexDataClass(JunkBaseDataClass):
+class JunkpyRegexDataClass(JunkpyBaseDataClass):
 	CLASS = Pattern
 	KEYWORD = "regex"
 	
@@ -119,7 +141,7 @@ class JunkRegexDataClass(JunkBaseDataClass):
 	
 
 # Date/Time
-class JunkTimeDeltaDataClass(JunkBaseDataClass):
+class JunkpyTimeDeltaDataClass(JunkpyBaseDataClass):
 	CLASS = timedelta
 	KEYWORD = "timedelta"
 	
@@ -136,7 +158,7 @@ class JunkTimeDeltaDataClass(JunkBaseDataClass):
 		
 		
 		
-class JunkTimestampDataClass(JunkBaseDataClass):
+class JunkpyTimestampDataClass(JunkpyBaseDataClass):
 	CLASS = datetime
 	KEYWORD = "timestamp"
 	
@@ -146,7 +168,7 @@ class JunkTimestampDataClass(JunkBaseDataClass):
 		
 		
 
-class JunkDatetimeDataClassParent(JunkBaseDataClass):
+class JunkpyDatetimeDataClassParent(JunkpyBaseDataClass):
 	@classmethod
 	def load(cls, value, **kwargs):
 		if(isinstance(value, list)):
@@ -163,26 +185,26 @@ class JunkDatetimeDataClassParent(JunkBaseDataClass):
 			
 			
 			
-class JunkTimeDataClass(JunkDatetimeDataClassParent):
+class JunkpyTimeDataClass(JunkpyDatetimeDataClassParent):
 	CLASS = time
 	KEYWORD = "time"
 	
 	
 	
-class JunkDateDataClass(JunkDatetimeDataClassParent):
+class JunkpyDateDataClass(JunkpyDatetimeDataClassParent):
 	CLASS = date
 	KEYWORD = "date"
 	
 	
 	
-class JunkDateTimeDataClass(JunkDatetimeDataClassParent):
+class JunkpyDateTimeDataClass(JunkpyDatetimeDataClassParent):
 	CLASS = datetime
 	KEYWORD = "datetime"
 
 
 
 # System
-class JunkEnvVarDataClass(JunkBaseDataClass):
+class JunkpyEnvVarDataClass(JunkpyBaseDataClass):
 	CLASS = str
 	KEYWORD = "env"
 	
@@ -192,7 +214,7 @@ class JunkEnvVarDataClass(JunkBaseDataClass):
 		
 		
 		
-class JunkPathDataClass(JunkBaseDataClass):
+class JunkpyPathDataClass(JunkpyBaseDataClass):
 	CLASS = Path
 	KEYWORD = "path"
 	
