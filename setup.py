@@ -3,7 +3,7 @@ from pathlib import Path
 
 setuptools.setup(
 	name = "junkpy",
-	version = "0.1.0",
+	version = "0.2.0",
 	author = "Samoxiaki",
 	author_email = "samoxiaki@yahoo.com",
 	url = "https://github.com/Samoxiaki/Junkpy",

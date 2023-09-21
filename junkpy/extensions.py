@@ -1,9 +1,9 @@
-from .dataclasses import JunkpyDataClass
+from .type_processors import JunkpyTypeProcessor
 from decimal import Decimal
 
 
 
-class JunkpyBaseMagnitudeDataClass(JunkpyDataClass):
+class JunkpyBaseMagnitudeTypeProcessor(JunkpyTypeProcessor):
 	CLASS = Decimal
 	KEYWORD = None
 	DEFAULT_UNIT = None
@@ -18,7 +18,7 @@ class JunkpyBaseMagnitudeDataClass(JunkpyDataClass):
 		
 	
 	
-class JunkpyMassDataClass(JunkpyBaseMagnitudeDataClass):
+class JunkpyMassTypeProcessor(JunkpyBaseMagnitudeTypeProcessor):
 	KEYWORD = "mass"
 	DEFAULT_UNIT = "g"
 	UNITS = {
@@ -39,7 +39,7 @@ class JunkpyMassDataClass(JunkpyBaseMagnitudeDataClass):
 	
 	
 	
-class JunkpyDistanceDataClass(JunkpyBaseMagnitudeDataClass):
+class JunkpyDistanceTypeProcessor(JunkpyBaseMagnitudeTypeProcessor):
 	KEYWORD = "distance"
 	DEFAULT_UNIT = "m"
 	UNITS = {
@@ -65,7 +65,7 @@ class JunkpyDistanceDataClass(JunkpyBaseMagnitudeDataClass):
 	
 	
 	
-class JunkpyVolumeDataClass(JunkpyBaseMagnitudeDataClass):
+class JunkpyVolumeTypeProcessor(JunkpyBaseMagnitudeTypeProcessor):
 	KEYWORD = "volume"
 	DEFAULT_UNIT = "l"
 	UNITS = {
@@ -85,7 +85,7 @@ class JunkpyVolumeDataClass(JunkpyBaseMagnitudeDataClass):
 	
 	
 	
-class JunkpySpeedDataClass(JunkpyBaseMagnitudeDataClass):
+class JunkpySpeedTypeProcessor(JunkpyBaseMagnitudeTypeProcessor):
 	KEYWORD = "speed"
 	DEFAULT_UNIT = "m/s"
 	UNITS = {

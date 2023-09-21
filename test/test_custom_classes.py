@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from junkpy import Junkpy, JunkpyDataClass
+from junkpy import Junkpy, JunkpyTypeProcessor
 from pathlib import Path
 import unittest
 
@@ -11,7 +11,7 @@ class CustomClassesTest(unittest.TestCase):
 		
 		cls.FILE_PATH = Path(__file__).parent / "test_files/test_file_custom_classes.junk"
 		
-		class CustomTestClass1(JunkpyDataClass):
+		class CustomTestClass1(JunkpyTypeProcessor):
 			CLASS = int
 			KEYWORD = "custom1"
 			
@@ -21,7 +21,7 @@ class CustomClassesTest(unittest.TestCase):
 		
 		
 		
-		class CustomTestClass2(JunkpyDataClass):
+		class CustomTestClass2(JunkpyTypeProcessor):
 			CLASS = int
 			KEYWORD = "custom2"
 			
@@ -44,7 +44,7 @@ class CustomClassesTest(unittest.TestCase):
 				return cls.CLASS(ret_v)
 		
 		
-		class CustomTestClass3(JunkpyDataClass):
+		class CustomTestClass3(JunkpyTypeProcessor):
 			CLASS = int
 			KEYWORD = "custom3"
 			

@@ -7,13 +7,13 @@ import re
 
 
 
-class JunkpyDataClass:
+class JunkpyTypeProcessor:
 	"""
-	Represents a data class used in Junkpy for parsing and loading data.
+	Represents a type processor used in Junkpy for parsing and loading data.
 
 	Attributes:
-		CLASS (type): The Python object type to be returned by the data class.
-		KEYWORD (str): The keyword used to identify this data class in Junkpy syntax.
+		CLASS (type): The Python object type to be returned by the type processor.
+		KEYWORD (str): The keyword used to identify this type processor in Junkpy syntax.
 
 	Methods:
 		load(cls, value, **kwargs): A class method that loads the given value and returns a python object of the type defined by CLASS attribute.
@@ -39,36 +39,36 @@ class JunkpyDataClass:
 
 
 
-class JunkpyBaseDataClassMeta(type):
-	BASE_DATA_CLASSES = []
+class JunkpyBaseTypeProcessorMeta(type):
+	BASE_TYPE_PROCESSOR_CLASSES = []
 	
 	@classmethod
 	def __new__(metacls, cls, name, bases, dct):
-		data_class = super().__new__(cls, name, bases, dct)
-		metacls.BASE_DATA_CLASSES.append(data_class)
-		return data_class
+		type_processor = super().__new__(cls, name, bases, dct)
+		metacls.BASE_TYPE_PROCESSOR_CLASSES.append(type_processor)
+		return type_processor
 
 
 
-class JunkpyBaseDataClass(JunkpyDataClass, metaclass=JunkpyBaseDataClassMeta):
+class JunkpyBaseTypeProcessor(JunkpyTypeProcessor, metaclass=JunkpyBaseTypeProcessorMeta):
 	pass
 	
 
 
 # Numeric
-class JunkpyBoolDataClass(JunkpyBaseDataClass):
+class JunkpyBoolTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = bool
 	KEYWORD = "bool"
 		
 		
 	
-class JunkpyIntegerDataClass(JunkpyBaseDataClass):
+class JunkpyIntegerTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = int
 	KEYWORD = "int"
 	
 	
 	
-class JunkpyHexDataClass(JunkpyBaseDataClass):
+class JunkpyHexTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = int
 	KEYWORD = "hex"
 	
@@ -78,7 +78,7 @@ class JunkpyHexDataClass(JunkpyBaseDataClass):
 		
 		
 		
-class JunkpyOctalDataClass(JunkpyBaseDataClass):
+class JunkpyOctalTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = int
 	KEYWORD = "octal"
 	
@@ -88,7 +88,7 @@ class JunkpyOctalDataClass(JunkpyBaseDataClass):
 		
 		
 		
-class JunkpyBinaryDataClass(JunkpyBaseDataClass):
+class JunkpyBinaryTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = int
 	KEYWORD = "bin"
 	
@@ -98,39 +98,39 @@ class JunkpyBinaryDataClass(JunkpyBaseDataClass):
 	
 	
 	
-class JunkpyComplexDataClass(JunkpyBaseDataClass):
+class JunkpyComplexTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = complex
 	KEYWORD = "complex"
 	
 	
 	
-class JunkpyFloatDataClass(JunkpyBaseDataClass):
+class JunkpyFloatTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = float
 	KEYWORD = "float"
 	
 
 
-class JunkpyDecimalDataClass(JunkpyBaseDataClass):
+class JunkpyDecimalTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = Decimal
 	KEYWORD = "decimal"
 	
 	
 
 # List
-class JunkpySetDataClass(JunkpyBaseDataClass):
+class JunkpySetTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = set
 	KEYWORD = "set"
 	
 
 
 # String
-class JunkpyStringDataClass(JunkpyBaseDataClass):
+class JunkpyStringTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = str
 	KEYWORD = "string"
 	
 	
 	
-class JunkpyRegexDataClass(JunkpyBaseDataClass):
+class JunkpyRegexTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = Pattern
 	KEYWORD = "regex"
 	
@@ -141,7 +141,7 @@ class JunkpyRegexDataClass(JunkpyBaseDataClass):
 	
 
 # Date/Time
-class JunkpyTimeDeltaDataClass(JunkpyBaseDataClass):
+class JunkpyTimeDeltaTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = timedelta
 	KEYWORD = "timedelta"
 	
@@ -158,7 +158,7 @@ class JunkpyTimeDeltaDataClass(JunkpyBaseDataClass):
 		
 		
 		
-class JunkpyTimestampDataClass(JunkpyBaseDataClass):
+class JunkpyTimestampTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = datetime
 	KEYWORD = "timestamp"
 	
@@ -168,7 +168,7 @@ class JunkpyTimestampDataClass(JunkpyBaseDataClass):
 		
 		
 
-class JunkpyDatetimeDataClassParent(JunkpyBaseDataClass):
+class JunkpyDatetimeTypeProcessorParent(JunkpyBaseTypeProcessor):
 	@classmethod
 	def load(cls, value, **kwargs):
 		if(isinstance(value, list)):
@@ -185,26 +185,26 @@ class JunkpyDatetimeDataClassParent(JunkpyBaseDataClass):
 			
 			
 			
-class JunkpyTimeDataClass(JunkpyDatetimeDataClassParent):
+class JunkpyTimeTypeProcessor(JunkpyDatetimeTypeProcessorParent):
 	CLASS = time
 	KEYWORD = "time"
 	
 	
 	
-class JunkpyDateDataClass(JunkpyDatetimeDataClassParent):
+class JunkpyDateTypeProcessor(JunkpyDatetimeTypeProcessorParent):
 	CLASS = date
 	KEYWORD = "date"
 	
 	
 	
-class JunkpyDateTimeDataClass(JunkpyDatetimeDataClassParent):
+class JunkpyDateTimeTypeProcessor(JunkpyDatetimeTypeProcessorParent):
 	CLASS = datetime
 	KEYWORD = "datetime"
 
 
 
 # System
-class JunkpyEnvVarDataClass(JunkpyBaseDataClass):
+class JunkpyEnvVarTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = str
 	KEYWORD = "env"
 	
@@ -214,7 +214,7 @@ class JunkpyEnvVarDataClass(JunkpyBaseDataClass):
 		
 		
 		
-class JunkpyPathDataClass(JunkpyBaseDataClass):
+class JunkpyPathTypeProcessor(JunkpyBaseTypeProcessor):
 	CLASS = Path
 	KEYWORD = "path"
 	
