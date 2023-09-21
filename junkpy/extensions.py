@@ -9,12 +9,14 @@ class JunkpyBaseMagnitudeTypeProcessor(JunkpyTypeProcessor):
 	DEFAULT_UNIT = None
 	UNITS = {}
 	
-	@classmethod
-	def load(cls, value, input=None, output=None):
-		input_ratio = cls.UNITS.get((input if(input is not None) else cls.DEFAULT_UNIT).lower(), cls.UNITS[cls.DEFAULT_UNIT])
-		output_ratio = cls.UNITS.get((output if(output is not None) else cls.DEFAULT_UNIT).lower(), cls.UNITS[cls.DEFAULT_UNIT])
+
+	def load(self, value, file_path, **kwargs):
+		input = kwargs.get("input")
+		output = kwargs.get("output")
+		input_ratio = self.UNITS.get((input if(input is not None) else self.DEFAULT_UNIT).lower(), self.UNITS[self.DEFAULT_UNIT])
+		output_ratio = self.UNITS.get((output if(output is not None) else self.DEFAULT_UNIT).lower(), self.UNITS[self.DEFAULT_UNIT])
 		
-		return cls.CLASS(value) * input_ratio / output_ratio
+		return self.CLASS(value) * input_ratio / output_ratio
 		
 	
 	

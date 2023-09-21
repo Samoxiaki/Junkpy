@@ -47,9 +47,9 @@ The `load_file(file_path)` method reads the contents of the specified file and p
 Additional methods such as `loads(string)` and `load(fp)` parse data from a string or a file-like object respectively.
 
 
-### Custom Modifiers
+### Custom Type Processors
 
-The `junkpy` library allows you to create custom modifiers to extend its functionality and tailor it to your specific needs. Here's an example of how you can create custom modifiers:
+The `junkpy` library allows you to create custom type processors to extend its functionality and tailor it to your specific needs. Here's an example of how you can create one:
 
 ```python
 from junkpy import Junkpy, JunkpyTypeProcessor
@@ -58,9 +58,8 @@ class BoundedValueTypeProcessor(JunkpyTypeProcessor):
     CLASS = float  # Output class
     KEYWORD = "bounded-value"  # Modifier keyword
 
-    @classmethod
-    def load(cls, value, **kwargs):
-        obj = cls.CLASS(value)
+    def load(self, value, file_path, **kwargs):
+        obj = self.CLASS(value)
         
         if "min" in kwargs:
             obj = max(kwargs["min"], obj)
@@ -74,6 +73,16 @@ class BoundedValueTypeProcessor(JunkpyTypeProcessor):
 # Instantiate the Junkpy parser with the custom type processor
 junkpy_parser = Junkpy([BoundedValueTypeProcessor])
 ```
+
+A basic type processor class requires defining `CLASS` and `KEYWORD` attributes and `load` method.
+- `CLASS`: Defines the output type of the processed value. Type checking is performed after the value has been processed.
+- `KEYWORD`: A string that will trigger this type processor when parsing data.`
+- `load`: An instance method aimed at processing and returning a value given its parameters:
+	- `self`: Reference to the own type processor instance.
+	- `value`: The value to be processed. This object could be of any type.
+	- `file_path`: A `Path` object containing the path of the current file being processed if any, otherwise `None`.
+	- `**kwargs`: Keyword arguments received from data being parsed.
+
 
 By including your custom type processor in the parser's initialization, you enable the parser to recognize and apply the specified modifications when loading files.
 

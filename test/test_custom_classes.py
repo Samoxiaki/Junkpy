@@ -16,9 +16,8 @@ class CustomClassesTest(unittest.TestCase):
 			CLASS = int
 			KEYWORD = "custom1"
 			
-			@classmethod
-			def load(cls, value, **kwargs):
-				return cls.CLASS(value) * 3
+			def load(self, value, file_path, **kwargs):
+				return self.CLASS(value) * 3
 		
 		
 		
@@ -26,9 +25,8 @@ class CustomClassesTest(unittest.TestCase):
 			CLASS = int
 			KEYWORD = "custom2"
 			
-			@classmethod
-			def load(cls, value, **kwargs):
-				ret_v = cls.CLASS(value) * 3
+			def load(self, value, file_path, **kwargs):
+				ret_v = self.CLASS(value) * 3
 				
 				min_value, max_value = kwargs.get("min"), kwargs.get("max")
 				
@@ -42,16 +40,15 @@ class CustomClassesTest(unittest.TestCase):
 					ret_v = min(ret_v, max_value)
 					
 					
-				return cls.CLASS(ret_v)
+				return self.CLASS(ret_v)
 		
 		
 		class CustomTestClass3(JunkpyTypeProcessor):
 			CLASS = int
 			KEYWORD = "custom3"
 			
-			@classmethod
-			def load(cls, value, **kwargs):
-				ret_v = 0 if(value is None) else cls.CLASS(value)
+			def load(self, value, file_path, **kwargs):
+				ret_v = 0 if(value is None) else self.CLASS(value)
 				
 				if("add" in kwargs):
 					ret_v += kwargs["add"]
@@ -66,7 +63,7 @@ class CustomClassesTest(unittest.TestCase):
 					ret_v /= kwargs["div"]
 					
 					
-				return cls.CLASS(ret_v)
+				return self.CLASS(ret_v)
 		
 		
 		cls.PARSER = Junkpy([

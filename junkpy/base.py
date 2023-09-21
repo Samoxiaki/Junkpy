@@ -1,13 +1,16 @@
 from typing import List, Optional, Type, IO
 from lark import Lark, Transformer
 from .type_processors import JunkpyTypeProcessor, JunkpyBaseTypeProcessorMeta
+import threading
+from pathlib import Path
 
 
 
 class JunkpyTransformer(Transformer):
-	def __init__(self, type_processors:list=None):
+	def __init__(self, parser_instance, type_processors: list = None):
 		super().__init__()
 		
+		self._parser_instance = parser_instance
 		self._type_processors_keyword_dict = {}
 		init_type_processors = JunkpyBaseTypeProcessorMeta.BASE_TYPE_PROCESSOR_CLASSES
 		if(type_processors is not None):
@@ -15,7 +18,7 @@ class JunkpyTransformer(Transformer):
 	
 		for type_processor in init_type_processors:
 			if(issubclass(type_processor, JunkpyTypeProcessor)):
-				self._type_processors_keyword_dict[type_processor.KEYWORD] = type_processor
+				self._type_processors_keyword_dict[type_processor.KEYWORD] = type_processor()
 				
 			else:
 				raise TypeError(f"Unsupported class type <{type_processor}>'")
@@ -30,11 +33,13 @@ class JunkpyTransformer(Transformer):
 		
 		
 	def typed_value_parser(self, type_cls, type_kwargs, value):
+		file_path = self._parser_instance._parsing_files.get(threading.current_thread().native_id, None)
+
 		type_processor = self._type_processors_keyword_dict.get(type_cls, None)
 		if(type_processor is None):
 			raise ValueError(f"Unsupported type <{type_cls}>")
 		
-		loaded_value = type_processor.load(value, **type_kwargs)
+		loaded_value = type_processor.load(value, file_path, **type_kwargs)
 		if(not isinstance(loaded_value, type_processor.CLASS)):
 			raise TypeError(f"Unexpected output type for type processor ({type_cls}). Expected {type_processor.CLASS}, got {type(loaded_value)}")
 			
@@ -114,8 +119,8 @@ class Junkpy:
 		Args:
 			data_classes (Optional[List[JunkpyTypeProcessor]]): List of type processors to be used for typed value conversion.
 		"""
-		
-		self.__parser = Lark(self.__JUNKPY_GRAMMAR, start='value', parser='lalr', transformer=JunkpyTransformer(type_processors))
+		self._parsing_files = {}
+		self.__parser = Lark(self.__JUNKPY_GRAMMAR, start='value', parser='lalr', transformer=JunkpyTransformer(self, type_processors))
 
 	
 	def loads(self, string: str) -> object:
@@ -128,7 +133,6 @@ class Junkpy:
 		Returns:
 			object: The parsed Python object.
 		"""
-		
 		return self.__parser.parse(string)
 		
 	
@@ -144,7 +148,7 @@ class Junkpy:
 		"""
 		
 		with fp as opened_fp:
-			return self.loads(opened_fp.read())	
+			return self.loads(opened_fp.read())
 		
 		
 	def load_file(self, file_path: str) -> object:
@@ -157,7 +161,14 @@ class Junkpy:
 		Returns:
 			object: The parsed Python object.
 		"""
-		
-		return self.load(open(file_path, "rt"))
 
+		thread_id = threading.current_thread().native_id
+		try:
+			self._parsing_files[thread_id] = Path(file_path)
+			return_data = self.load(open(file_path, "rt"))
+		
+		finally:
+			del self._parsing_files[thread_id]
+
+		return return_data
 
