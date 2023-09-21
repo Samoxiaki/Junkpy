@@ -1,3 +1,3 @@
 from .base import Junkpy
-from .dataclasses import JunkpyDataClass
+from .type_processors import JunkpyTypeProcessor
 from . import extensions

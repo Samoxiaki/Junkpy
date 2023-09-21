@@ -52,9 +52,9 @@ Additional methods such as `loads(string)` and `load(fp)` parse data from a stri
 The `junkpy` library allows you to create custom modifiers to extend its functionality and tailor it to your specific needs. Here's an example of how you can create custom modifiers:
 
 ```python
-from junkpy import Junkpy, JunkpyDataClass
+from junkpy import Junkpy, JunkpyTypeProcessor
 
-class BoundedValueDataClass(JunkpyDataClass):
+class BoundedValueTypeProcessor(JunkpyTypeProcessor):
     CLASS = float  # Output class
     KEYWORD = "bounded-value"  # Modifier keyword
 
@@ -71,11 +71,11 @@ class BoundedValueDataClass(JunkpyDataClass):
         return obj
 
 
-# Instantiate the Junkpy parser with the custom data class
-junkpy_parser = Junkpy([BoundedValueDataClass])
+# Instantiate the Junkpy parser with the custom type processor
+junkpy_parser = Junkpy([BoundedValueTypeProcessor])
 ```
 
-By including your custom data class in the parser's initialization, you enable the parser to recognize and apply the specified modifications when loading files.
+By including your custom type processor in the parser's initialization, you enable the parser to recognize and apply the specified modifications when loading files.
 
 ## Feature Overview
 ### Autodetected Values

@@ -1,24 +1,24 @@
 from typing import List, Optional, Type, IO
 from lark import Lark, Transformer
-from .dataclasses import JunkpyDataClass, JunkpyBaseDataClassMeta
+from .type_processors import JunkpyTypeProcessor, JunkpyBaseTypeProcessorMeta
 
 
 
 class JunkpyTransformer(Transformer):
-	def __init__(self, data_classes:list=None):
+	def __init__(self, type_processors:list=None):
 		super().__init__()
 		
-		self._data_class_keyword_dict = {}
-		init_data_classes = JunkpyBaseDataClassMeta.BASE_DATA_CLASSES
-		if(data_classes is not None):
-			init_data_classes += data_classes if(isinstance(data_classes, list)) else [data_classes]
+		self._type_processors_keyword_dict = {}
+		init_type_processors = JunkpyBaseTypeProcessorMeta.BASE_TYPE_PROCESSOR_CLASSES
+		if(type_processors is not None):
+			init_type_processors += type_processors if(isinstance(type_processors, list)) else [type_processors]
 	
-		for data_class in init_data_classes:
-			if(issubclass(data_class, JunkpyDataClass)):
-				self._data_class_keyword_dict[data_class.KEYWORD] = data_class
+		for type_processor in init_type_processors:
+			if(issubclass(type_processor, JunkpyTypeProcessor)):
+				self._type_processors_keyword_dict[type_processor.KEYWORD] = type_processor
 				
 			else:
-				raise TypeError(f"Unsupported class type <{data_class}>'")
+				raise TypeError(f"Unsupported class type <{type_processor}>'")
 				
 				
 	def typed_value(self, value):
@@ -30,13 +30,13 @@ class JunkpyTransformer(Transformer):
 		
 		
 	def typed_value_parser(self, type_cls, type_kwargs, value):
-		data_class = self._data_class_keyword_dict.get(type_cls, None)
-		if(data_class is None):
+		type_processor = self._type_processors_keyword_dict.get(type_cls, None)
+		if(type_processor is None):
 			raise ValueError(f"Unsupported type <{type_cls}>")
 		
-		loaded_value = data_class.load(value, **type_kwargs)
-		if(not isinstance(loaded_value, data_class.CLASS)):
-			raise TypeError(f"Unexpected output type for data class ({type_cls}). Expected {data_class.CLASS}, got {type(loaded_value)}")
+		loaded_value = type_processor.load(value, **type_kwargs)
+		if(not isinstance(loaded_value, type_processor.CLASS)):
+			raise TypeError(f"Unexpected output type for type processor ({type_cls}). Expected {type_processor.CLASS}, got {type(loaded_value)}")
 			
 		return loaded_value
 	
@@ -107,15 +107,15 @@ class Junkpy:
 	"""
 	
 
-	def __init__(self, data_classes: Optional[List[Type[JunkpyDataClass]]] = None):
+	def __init__(self, type_processors: Optional[List[Type[JunkpyTypeProcessor]]] = None):
 		"""
 		Initializes the Junkpy parser.
 
 		Args:
-			data_classes (Optional[List[JunkpyDataClass]]): List of data classes to be used for typed value conversion.
+			data_classes (Optional[List[JunkpyTypeProcessor]]): List of type processors to be used for typed value conversion.
 		"""
 		
-		self.__parser = Lark(self.__JUNKPY_GRAMMAR, start='value', parser='lalr', transformer=JunkpyTransformer(data_classes))
+		self.__parser = Lark(self.__JUNKPY_GRAMMAR, start='value', parser='lalr', transformer=JunkpyTransformer(type_processors))
 
 	
 	def loads(self, string: str) -> object:
