@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from junkpy import Junkpy
+from junkpy import JunkParser
 from re import Pattern
 from pathlib import Path
 from decimal import Decimal
@@ -11,7 +11,7 @@ import unittest
 class NonJSONSyntaxTest(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
-		cls.PARSER = Junkpy()
+		cls.PARSER = JunkParser()
 		cls.UNQUOTED_KEYS_DATA = """
 			{
 				"quoted_key": 123,

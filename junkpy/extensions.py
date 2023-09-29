@@ -1,16 +1,16 @@
-from .type_processors import JunkpyTypeProcessor
+from .type_processors import JunkTypeProcessor
 from decimal import Decimal
 
 
 
-class JunkpyBaseMagnitudeTypeProcessor(JunkpyTypeProcessor):
+class JunkBaseMagnitudeTypeProcessor(JunkTypeProcessor):
 	CLASS = Decimal
 	KEYWORD = None
 	DEFAULT_UNIT = None
 	UNITS = {}
 	
 
-	def load(self, value, file_path, **kwargs):
+	def load(self, value, **kwargs):
 		input = kwargs.get("input")
 		output = kwargs.get("output")
 		input_ratio = self.UNITS.get((input if(input is not None) else self.DEFAULT_UNIT).lower(), self.UNITS[self.DEFAULT_UNIT])
@@ -20,7 +20,7 @@ class JunkpyBaseMagnitudeTypeProcessor(JunkpyTypeProcessor):
 		
 	
 	
-class JunkpyMassTypeProcessor(JunkpyBaseMagnitudeTypeProcessor):
+class JunkMassTypeProcessor(JunkBaseMagnitudeTypeProcessor):
 	KEYWORD = "mass"
 	DEFAULT_UNIT = "g"
 	UNITS = {
@@ -41,7 +41,7 @@ class JunkpyMassTypeProcessor(JunkpyBaseMagnitudeTypeProcessor):
 	
 	
 	
-class JunkpyDistanceTypeProcessor(JunkpyBaseMagnitudeTypeProcessor):
+class JunkDistanceTypeProcessor(JunkBaseMagnitudeTypeProcessor):
 	KEYWORD = "distance"
 	DEFAULT_UNIT = "m"
 	UNITS = {
@@ -67,7 +67,7 @@ class JunkpyDistanceTypeProcessor(JunkpyBaseMagnitudeTypeProcessor):
 	
 	
 	
-class JunkpyVolumeTypeProcessor(JunkpyBaseMagnitudeTypeProcessor):
+class JunkVolumeTypeProcessor(JunkBaseMagnitudeTypeProcessor):
 	KEYWORD = "volume"
 	DEFAULT_UNIT = "l"
 	UNITS = {
@@ -87,7 +87,7 @@ class JunkpyVolumeTypeProcessor(JunkpyBaseMagnitudeTypeProcessor):
 	
 	
 	
-class JunkpySpeedTypeProcessor(JunkpyBaseMagnitudeTypeProcessor):
+class JunkSpeedTypeProcessor(JunkBaseMagnitudeTypeProcessor):
 	KEYWORD = "speed"
 	DEFAULT_UNIT = "m/s"
 	UNITS = {

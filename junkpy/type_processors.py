@@ -7,13 +7,13 @@ import re
 
 
 
-class JunkpyTypeProcessor:
+class JunkTypeProcessor:
 	"""
-	Represents a type processor used in Junkpy for parsing and loading data.
+	Represents a type processor used in Junkpy for parsing and loading data of a Junk file.
 
 	Attributes:
 		CLASS (type): The Python object type to be returned by the type processor.
-		KEYWORD (str): The keyword used to identify this type processor in Junkpy syntax.
+		KEYWORD (str): The keyword used to identify this type processor in Junk syntax.
 
 	Methods:
 		load(self, value, file_path, **kwargs): A method that processes the parsed value and returns a python object of the type defined by CLASS attribute.
@@ -22,14 +22,18 @@ class JunkpyTypeProcessor:
 	CLASS = None
 	KEYWORD = None
 	
-	def load(self, value: object, file_path: Path, **kwargs) -> object:
+
+	def __init__(self, parser):
+		self.__parser = parser
+
+
+	def load(self, value: object, **kwargs) -> object:
 		"""
 		Loads the given value and returns an instance of a python object.
 
 		Args:
 			value: The parsed value to be modified or loaded.
-			file_path: File path of current file being parsed, if any.
-			**kwargs: Modifiers included when forcing the type in a Junkpy file.
+			**kwargs: Modifiers included when forcing the type in a Junk file.
 
 		Returns:
 			object: An instance of the modified or loaded value.
@@ -38,8 +42,13 @@ class JunkpyTypeProcessor:
 		return self.CLASS(value)
 
 
+	@property
+	def metadata(self):
+		return self.__parser._locals.metadata
 
-class JunkpyBaseTypeProcessorMeta(type):
+
+
+class JunkBaseTypeProcessorMeta(type):
 	BASE_TYPE_PROCESSOR_CLASSES = []
 	
 	@classmethod
@@ -50,103 +59,103 @@ class JunkpyBaseTypeProcessorMeta(type):
 
 
 
-class JunkpyBaseTypeProcessor(JunkpyTypeProcessor, metaclass=JunkpyBaseTypeProcessorMeta):
+class JunkBaseTypeProcessor(JunkTypeProcessor, metaclass=JunkBaseTypeProcessorMeta):
 	pass
 	
 
 
 # Numeric
-class JunkpyBoolTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkBoolTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = bool
 	KEYWORD = "bool"
 		
 		
 	
-class JunkpyIntegerTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkIntegerTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = int
 	KEYWORD = "int"
 	
 	
 	
-class JunkpyHexTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkHexTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = int
 	KEYWORD = "hex"
 	
 	
-	def load(self, value, file_path, **kwargs):
+	def load(self, value, **kwargs):
 		return self.CLASS(value, 16)
 		
 		
 		
-class JunkpyOctalTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkOctalTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = int
 	KEYWORD = "octal"
 	
 	
-	def load(self, value, file_path, **kwargs):
+	def load(self, value, **kwargs):
 		return self.CLASS(value, 8)
 		
 		
 		
-class JunkpyBinaryTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkBinaryTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = int
 	KEYWORD = "bin"
 	
 	
-	def load(self, value, file_path, **kwargs):
+	def load(self, value, **kwargs):
 		return self.CLASS(value, 2)
 	
 	
 	
-class JunkpyComplexTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkComplexTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = complex
 	KEYWORD = "complex"
 	
 	
 	
-class JunkpyFloatTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkFloatTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = float
 	KEYWORD = "float"
 	
 
 
-class JunkpyDecimalTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkDecimalTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = Decimal
 	KEYWORD = "decimal"
 	
 	
 
 # List
-class JunkpySetTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkSetTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = set
 	KEYWORD = "set"
 	
 
 
 # String
-class JunkpyStringTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkStringTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = str
 	KEYWORD = "string"
 	
 	
 	
-class JunkpyRegexTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkRegexTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = Pattern
 	KEYWORD = "regex"
 	
 	
-	def load(self, value, file_path, **kwargs):
+	def load(self, value, **kwargs):
 		return re.compile(str(value))
 
 	
 
 # Date/Time
-class JunkpyTimeDeltaTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkTimeDeltaTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = timedelta
 	KEYWORD = "timedelta"
 	
 	
-	def load(self, value, file_path, **kwargs):
+	def load(self, value, **kwargs):
 		if(isinstance(value, list)):
 			return self.CLASS(*value)
 			
@@ -158,19 +167,19 @@ class JunkpyTimeDeltaTypeProcessor(JunkpyBaseTypeProcessor):
 		
 		
 		
-class JunkpyTimestampTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkTimestampTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = datetime
 	KEYWORD = "timestamp"
 	
 	
-	def load(self, value, file_path, **kwargs):
+	def load(self, value, **kwargs):
 		return self.CLASS.fromtimestamp(float(value))
 		
 		
 
-class JunkpyDatetimeTypeProcessorParent(JunkpyBaseTypeProcessor):
+class JunkDatetimeTypeProcessorParent(JunkBaseTypeProcessor):
 	
-	def load(self, value, file_path, **kwargs):
+	def load(self, value, **kwargs):
 		if(isinstance(value, list)):
 			return self.CLASS(*value)
 			
@@ -185,41 +194,41 @@ class JunkpyDatetimeTypeProcessorParent(JunkpyBaseTypeProcessor):
 			
 			
 			
-class JunkpyTimeTypeProcessor(JunkpyDatetimeTypeProcessorParent):
+class JunkTimeTypeProcessor(JunkDatetimeTypeProcessorParent):
 	CLASS = time
 	KEYWORD = "time"
 	
 	
 	
-class JunkpyDateTypeProcessor(JunkpyDatetimeTypeProcessorParent):
+class JunkDateTypeProcessor(JunkDatetimeTypeProcessorParent):
 	CLASS = date
 	KEYWORD = "date"
 	
 	
 	
-class JunkpyDateTimeTypeProcessor(JunkpyDatetimeTypeProcessorParent):
+class JunkDateTimeTypeProcessor(JunkDatetimeTypeProcessorParent):
 	CLASS = datetime
 	KEYWORD = "datetime"
 
 
 
 # System
-class JunkpyEnvVarTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkEnvVarTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = str
 	KEYWORD = "env"
 	
 	
-	def load(self, value, file_path, **kwargs):
+	def load(self, value, **kwargs):
 		return os.path.expandvars(self.CLASS(value))		
 		
 		
 		
-class JunkpyPathTypeProcessor(JunkpyBaseTypeProcessor):
+class JunkPathTypeProcessor(JunkBaseTypeProcessor):
 	CLASS = Path
 	KEYWORD = "path"
 	
 	
-	def load(self, value, file_path, **kwargs):
+	def load(self, value, **kwargs):
 		return self.CLASS(os.path.expandvars(str(value)))
 
 

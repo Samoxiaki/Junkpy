@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from junkpy import Junkpy
+from junkpy import JunkParser
 from re import Pattern
 from pathlib import Path
 from decimal import Decimal
@@ -11,7 +11,7 @@ import unittest
 class BuiltinTypesTest(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
-		cls.PARSER = Junkpy()
+		cls.PARSER = JunkParser()
 		cls.FILE_PATH = Path(__file__).parent / "test_files/test_file_builtin_forced_types.junk"
 		cls.KEY_TYPE_PAIRS = {
 			"string": str,

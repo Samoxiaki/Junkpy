@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from junkpy import Junkpy
+from junkpy import JunkParser
 from pathlib import Path
 import unittest
 
@@ -8,7 +8,7 @@ import unittest
 class DataLoadTest(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
-		cls.PARSER = Junkpy()
+		cls.PARSER = JunkParser()
 		cls.FILE_PATH = Path(__file__).parent / "test_files/test_file_simple.junk"
 		cls.DATA_AS_STRING = """
 			{

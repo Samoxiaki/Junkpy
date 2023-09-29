@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from junkpy import Junkpy, JunkpyTypeProcessor
+from junkpy import JunkParser, JunkTypeProcessor
 from pathlib import Path
 import unittest
 from concurrent.futures import ThreadPoolExecutor
@@ -14,29 +14,29 @@ class ThreadingTest(unittest.TestCase):
 		cls.NUM_THREADS = 4
 		cls.ITERATIONS = 64
 
-		class ThreadChecker1(JunkpyTypeProcessor):
+		class ThreadChecker1(JunkTypeProcessor):
 			CLASS = int
 			KEYWORD = "thread_checker1"
 			
-			def load(self, value, file_path, **kwargs):
-				if(file_path != cls.FILE_PATH_1):
+			def load(self, value, **kwargs):
+				if(self.metadata.file_path != cls.FILE_PATH_1):
 					raise Exception("Wrong file.")
 
 				return self.CLASS(value)
 			
 
-		class ThreadChecker2(JunkpyTypeProcessor):
+		class ThreadChecker2(JunkTypeProcessor):
 			CLASS = int
 			KEYWORD = "thread_checker2"
 			
-			def load(self, value, file_path, **kwargs):
-				if(file_path != cls.FILE_PATH_2):
+			def load(self, value, **kwargs):
+				if(self.metadata.file_path != cls.FILE_PATH_2):
 					raise Exception("Wrong file.")
 
 				return self.CLASS(value)	
 
 
-		cls.PARSER = Junkpy([
+		cls.PARSER = JunkParser([
 			ThreadChecker1,
 			ThreadChecker2
 		])

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from junkpy import Junkpy, JunkpyTypeProcessor
+from junkpy import JunkParser, JunkTypeProcessor
 from pathlib import Path
 import unittest
 
@@ -12,20 +12,20 @@ class CustomClassesTest(unittest.TestCase):
 		
 		cls.FILE_PATH = Path(__file__).parent / "test_files/test_file_custom_classes.junk"
 		
-		class CustomTestClass1(JunkpyTypeProcessor):
+		class CustomTestClass1(JunkTypeProcessor):
 			CLASS = int
 			KEYWORD = "custom1"
 			
-			def load(self, value, file_path, **kwargs):
+			def load(self, value, **kwargs):
 				return self.CLASS(value) * 3
 		
 		
 		
-		class CustomTestClass2(JunkpyTypeProcessor):
+		class CustomTestClass2(JunkTypeProcessor):
 			CLASS = int
 			KEYWORD = "custom2"
 			
-			def load(self, value, file_path, **kwargs):
+			def load(self, value, **kwargs):
 				ret_v = self.CLASS(value) * 3
 				
 				min_value, max_value = kwargs.get("min"), kwargs.get("max")
@@ -43,11 +43,11 @@ class CustomClassesTest(unittest.TestCase):
 				return self.CLASS(ret_v)
 		
 		
-		class CustomTestClass3(JunkpyTypeProcessor):
+		class CustomTestClass3(JunkTypeProcessor):
 			CLASS = int
 			KEYWORD = "custom3"
 			
-			def load(self, value, file_path, **kwargs):
+			def load(self, value, **kwargs):
 				ret_v = 0 if(value is None) else self.CLASS(value)
 				
 				if("add" in kwargs):
@@ -66,7 +66,7 @@ class CustomClassesTest(unittest.TestCase):
 				return self.CLASS(ret_v)
 		
 		
-		cls.PARSER = Junkpy([
+		cls.PARSER = JunkParser([
 			CustomTestClass1,
 			CustomTestClass2,
 			CustomTestClass3

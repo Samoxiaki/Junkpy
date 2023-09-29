@@ -3,11 +3,11 @@ from pathlib import Path
 
 setuptools.setup(
 	name = "junkpy",
-	version = "0.3.0",
+	version = "0.4.0",
 	author = "Samoxiaki",
 	author_email = "samoxiaki@yahoo.com",
 	url = "https://github.com/Samoxiaki/Junkpy",
-	description = "Extended JSON Library for Configuration Files",
+	description = "Library for processing Junk configuration files",
 	long_description=(Path(__file__).parent / "README.md").read_text(),
     long_description_content_type='text/markdown',
 	packages = ["junkpy"],
