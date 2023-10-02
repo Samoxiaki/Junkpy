@@ -11,6 +11,20 @@ class JunkMetadata:
 	file_path : Path
 
 
+class JunkParserThreadingLocalStorage(threading.local):
+	def __init__(self):
+		self.storage = []
+
+	def push(self, data):
+		self.storage.append(data)
+
+	def get(self):
+		return self.storage[-1]
+	
+	def pop(self):
+		return self.storage.pop()
+	
+
 
 class JunkParser:
 	__JUNK_GRAMMAR = r"""
@@ -68,7 +82,7 @@ class JunkParser:
 			type_processors (Optional[List[JunkTypeProcessor]]): List of type processors to be used for typed value conversion.
 		"""
 
-		self._locals = threading.local()
+		self._local_storage = JunkParserThreadingLocalStorage()
 
 		self._type_processors_keyword_dict = {}
 		init_type_processors = JunkBaseTypeProcessorMeta.BASE_TYPE_PROCESSOR_CLASSES
@@ -98,18 +112,20 @@ class JunkParser:
 			object: The parsed Python object.
 		"""
 		try:
-			self._locals.metadata = JunkMetadata(
-				file_path = None
+			self._local_storage.push(
+				JunkMetadata(
+					file_path = None
+				)
 			)
 			
-			self.before_parsing(self._locals.metadata)
+			self.before_parsing(self._local_storage.get())
 
 			return_data = self.__parser.parse(string)
 			
-			return_data =self.after_parsing(self._locals.metadata, return_data)
+			return_data =self.after_parsing(self._local_storage.get(), return_data)
 		
 		finally:
-			del self._locals.metadata
+			self._local_storage.pop()
 
 		return return_data 
 		
@@ -125,19 +141,21 @@ class JunkParser:
 			object: The parsed Python object.
 		"""
 		try:
-			self._locals.metadata = JunkMetadata(
-				file_path = Path(fp.name)
+			self._local_storage.push(
+				JunkMetadata(
+					file_path = Path(fp.name)
+				)
 			)
 			
-			self.before_parsing(self._locals.metadata)
+			self.before_parsing(self._local_storage.get())
 
 			with fp as opened_fp:
 				return_data = self.__parser.parse(opened_fp.read())
 
-			return_data = self.after_parsing(self._locals.metadata, return_data)
+			return_data = self.after_parsing(self._local_storage.get(), return_data)
 		
 		finally:
-			del self._locals.metadata
+			self._local_storage.pop()
 
 		return return_data
 		
@@ -153,19 +171,21 @@ class JunkParser:
 			object: The parsed Python object.
 		"""
 		try:
-			self._locals.metadata = JunkMetadata(
-				file_path = Path(file_path)
+			self._local_storage.push(
+				JunkMetadata(
+					file_path = Path(file_path)
+				)
 			)
 			
-			self.before_parsing(self._locals.metadata)
+			self.before_parsing(self._local_storage.get())
 
 			with open(file_path, "rt") as opened_fp:
 				return_data = self.__parser.parse(opened_fp.read())
 		
-			return_data = self.after_parsing(self._locals.metadata, return_data)
+			return_data = self.after_parsing(self._local_storage.get(), return_data)
 
 		finally:
-			del self._locals.metadata
+			self._local_storage.pop()
 
 		return return_data
 

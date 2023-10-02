@@ -44,7 +44,7 @@ class JunkTypeProcessor:
 
 	@property
 	def metadata(self):
-		return self.__parser._locals.metadata
+		return self.__parser._local_storage.get()
 
 
 
