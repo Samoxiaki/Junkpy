@@ -140,14 +140,16 @@ A basic type processor class requires defining `CLASS` and `KEYWORD` attributes 
 	- `value`: The value to be processed. This object could be of any type.
 	- `**kwargs`: Keyword arguments received from data being parsed.
 
-Every type processor contains a shares a property called `metadata` which can be accessed inside `load` method. This property stores the following data:
+Every type processor contains a shared property called `metadata` which can be accessed inside `load` method. This property stores the following data:
 - `file_path`: Path of the current file being parsed, if any, otherwise `None`.
 
-The `metadata` can also be used to store data and share it accross different type processors.
+The `metadata` can also be used to store data and share it across different type processors.
 
-By including your custom type processor in the parser's initialization, you enable the parser to recognize and apply the specified modifications when loading files.
+Retrieve the current parser instance from the `parser` property of type processors. This allows parsing data recursively while processing is ongoing.
 
-Note: Not all type conversions in Junkpy can be initialized with a null value. For example, when a `null` value is converted to the type `(string)`, a Python string object with the value `"None"` will be created. However, if the type is `(int)`, it will result in an error since `null` cannot be converted to an integer. It's important to be cautious when using type conversions and ensure they are compatible with null values.
+By including your custom type processor during the parser's initialization, you enable the parser to recognize and apply the specified modifications when loading files.
+
+Note: Not all type conversions in Junkpy can be initialized with a null value. For example, when a `null` value is converted to the type `(string)`, a Python string object with the value `"None"` will be created. However, if the type is `(int)`, it will result in an error since `null` cannot be converted to an integer. It's important to exercise caution when using type conversions and ensure they are compatible with null values.
 
 
 ### Extending the Parser Class
@@ -216,13 +218,13 @@ To contribute to Junkpy, follow these steps:
 3. Implement your changes.
 4. Write tests to ensure the correctness of your code.
 5. Commit and push your changes to your forked repository.
-6. Open a pull request, providing a detailed description of your changes.
+6. Open a pull request and provide a detailed description of your changes.
 
 
 ## License
 
-Junkpy is released under the [GNU GPLv3](https://github.com/samoxiaki/junkpy/blob/main/LICENSE.txt). You are free to use, modify, and distribute this library as per the terms of the license.
+Junkpy is released under the [GNU GPLv3](https://github.com/samoxiaki/junkpy/blob/main/LICENSE.txt) license. You are free to use, modify, and distribute this library as per the terms of the license.
 
 ## Support
 
-If you need any assistance or have any questions regarding Junkpy, please feel free to [open an issue](https://github.com/samoxiaki/junkpy/issues) on the GitHub repository. We'll be happy to help you.
+If you need assistance or have questions about Junkpy, please feel free to [open an issue](https://github.com/samoxiaki/junkpy/issues) on the GitHub repository. We'll be happy to assist you.

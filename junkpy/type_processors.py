@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+	from .base import JunkMetadata, JunkParser
+
 from decimal import Decimal
 from datetime import datetime, timedelta, date, time
 from pathlib import Path
@@ -43,8 +48,12 @@ class JunkTypeProcessor:
 
 
 	@property
-	def metadata(self):
+	def metadata(self) -> JunkMetadata:
 		return self.__parser._local_storage.get()
+	
+	@property
+	def parser(self) -> JunkParser:
+		return self.__parser
 
 
 
