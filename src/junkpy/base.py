@@ -1,9 +1,11 @@
-from typing import List, Optional, Type, IO
+import os
+from typing import Any, List, Optional, Type, IO, Union
 from lark import Lark, Transformer
 from .type_processors import JunkTypeProcessor, JunkBaseTypeProcessorMeta
 import threading
 from pathlib import Path
 from dataclasses import dataclass
+from pydantic import BaseModel
 
 
 @dataclass
@@ -87,11 +89,11 @@ class JunkParser:
 		self._type_processors_keyword_dict = {}
 		init_type_processors = JunkBaseTypeProcessorMeta.BASE_TYPE_PROCESSOR_CLASSES
 
-		if(type_processors is not None):
+		if type_processors is not None:
 			init_type_processors += type_processors if(isinstance(type_processors, list)) else [type_processors]
 	
 		for type_processor in init_type_processors:
-			if(issubclass(type_processor, JunkTypeProcessor)):
+			if issubclass(type_processor, JunkTypeProcessor):
 				self._type_processors_keyword_dict[type_processor.KEYWORD] = type_processor(self)
 				
 			else:
@@ -101,15 +103,32 @@ class JunkParser:
 		self.__parser = Lark(self.__JUNK_GRAMMAR, start='value', parser='lalr', transformer=JunkTransformer(self))
 
 
-	def loads(self, string: str) -> object:
+	def _validate_to_model[T: BaseModel](
+		self,
+		data: Any,
+		validate_to: Optional[Type[T]]
+	) -> Union[T, Any]:
+	
+		if validate_to is not None:
+			return validate_to.model_validate(data)
+		
+		return data
+	
+
+	def loads[T: BaseModel](
+		self,
+		string: str, 
+		validate_to: Optional[Type[T]] = None
+	) -> Union[T, Any]:
 		"""
 		Parses a Junk string and returns the corresponding Python object.
 
 		Args:
 			string (str): The Junk string to parse.
+			validate_to (Optional[Type[T]]): The pydantic model to validate the parsed data to.
 
 		Returns:
-			object: The parsed Python object.
+			Union[T, Any]: The parsed Python object.
 		"""
 		try:
 			self._local_storage.push(
@@ -127,18 +146,23 @@ class JunkParser:
 		finally:
 			self._local_storage.pop()
 
-		return return_data 
+		return self._validate_to_model(return_data, validate_to)
 		
 	
-	def load(self, fp: IO) -> object:
+	def load[T: BaseModel](
+		self, 
+		fp: IO, 
+		validate_to: Optional[Type[T]] = None
+	) -> Union[T, Any]:
 		"""
 		Parses a Junk file-like object and returns the corresponding Python object.
 
 		Args:
 			fp (file-like): The file-like object containing the Junk data.
+			validate_to (Optional[Type[T]]): The pydantic model to validate the parsed data to.
 
 		Returns:
-			object: The parsed Python object.
+			Union[T, Any]: The parsed Python object.
 		"""
 		try:
 			self._local_storage.push(
@@ -157,18 +181,23 @@ class JunkParser:
 		finally:
 			self._local_storage.pop()
 
-		return return_data
+		return self._validate_to_model(return_data, validate_to)
 		
 		
-	def load_file(self, file_path: str) -> object:
+	def load_file[T: BaseModel](
+		self,
+		file_path: Union[str, Path], 
+		validate_to: Optional[Type[T]] = None
+	) -> Union[T, Any]:
 		"""
 		Parses a Junk file and returns the corresponding Python object.
 
 		Args:
-			file_path (str): The path to the Junk file.
+			file_path Union[str, Path]: The path to the Junk file.
+			validate_to (Optional[Type[T]]): The pydantic model to validate the parsed data to.
 
 		Returns:
-			object: The parsed Python object.
+			Union[T, Any]: The parsed Python object.
 		"""
 		try:
 			self._local_storage.push(
@@ -187,14 +216,32 @@ class JunkParser:
 		finally:
 			self._local_storage.pop()
 
-		return return_data
+		return self._validate_to_model(return_data, validate_to)
+
+
+	def load_file_from_env[T: BaseModel](self, env_var: str, validate_to: Optional[Type[T]] = None) -> Union[T, Any]:
+		"""
+		Parses a Junk file from an environment variable and returns the corresponding Python object.
+		
+		Args:
+			env_var (str): The environment variable containing the Junk file path.
+			validate_to (Optional[Type[T]]): The pydantic model to validate the parsed data to.
+
+		Returns:
+			Union[T, Any]: The parsed Python object.
+		"""
+		file_path = os.environ.get(env_var, None)
+		if file_path is None:
+			raise ValueError(f"Environment variable {env_var} is not set")
+
+		return self.load_file(file_path, validate_to)
 
 
 	def before_parsing(self, metadata: JunkMetadata):
 		pass
 
 
-	def after_parsing(self, metadata: JunkMetadata, parsed_data: object) -> object:
+	def after_parsing(self, metadata: JunkMetadata, parsed_data: Any) -> Any:
 		return parsed_data
 
 
@@ -215,11 +262,11 @@ class JunkTransformer(Transformer):
 		
 	def typed_value_parser(self, type_cls, type_kwargs, value):
 		type_processor = self._parser_instance._type_processors_keyword_dict.get(type_cls, None)
-		if(type_processor is None):
+		if type_processor is None:
 			raise ValueError(f"Unsupported type <{type_cls}>")
 		
 		loaded_value = type_processor.load(value, **type_kwargs)
-		if(not isinstance(loaded_value, type_processor.CLASS)):
+		if not isinstance(loaded_value, type_processor.CLASS):
 			raise TypeError(f"Unexpected output type for type processor ({type_cls}). Expected {type_processor.CLASS}, got {type(loaded_value)}")
 			
 		return loaded_value

@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "junkpy"
+version = "0.4.3"
+description = "Library for processing Junk configuration files"
+readme = {file = 'README.md', content-type='text/markdown'}
+requires-python = ">=3.12"
+license = {file = "LICENSE.txt"}
+authors = [
+    { name = "Samoxiaki" },
+	{ email = "samoxiaki@yahoo.com" }
+]
+dependencies = [
+	"pydantic",
+	"lark"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

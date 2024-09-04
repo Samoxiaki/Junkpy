@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional, Type
 if TYPE_CHECKING:
 	from .base import JunkMetadata, JunkParser
 
@@ -24,15 +24,15 @@ class JunkTypeProcessor:
 		load(self, value, file_path, **kwargs): A method that processes the parsed value and returns a python object of the type defined by CLASS attribute.
 
 	"""
-	CLASS = None
-	KEYWORD = None
+	CLASS: type = None
+	KEYWORD: str = None 
 	
 
 	def __init__(self, parser):
 		self.__parser = parser
 
 
-	def load(self, value: object, **kwargs) -> object:
+	def load(self, value: Any, **kwargs) -> Any:
 		"""
 		Loads the given value and returns an instance of a python object.
 
@@ -51,6 +51,7 @@ class JunkTypeProcessor:
 	def metadata(self) -> JunkMetadata:
 		return self.__parser._local_storage.get()
 	
+
 	@property
 	def parser(self) -> JunkParser:
 		return self.__parser

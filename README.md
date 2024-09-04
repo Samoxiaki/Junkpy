@@ -103,7 +103,32 @@ data = junk_parser.load_file("file.junk")
 Replace `"file.junk"` with the path to your own file.
 
 The `load_file(file_path)` method reads the contents of the specified file and processes it using the Junk parser.
-Additional methods such as `loads(string)` and `load(fp)` parse data from a string or a file-like object respectively.
+
+Avalaible load methods:
+- `load_file(file_path)` parses data from a file.
+- `loads(string)` parses data from a string.
+- `load(fp)` parses data from a file-like object.
+- `load_file_from_env(env_var)` parses data from a file specified in an environment variable.
+
+
+### Pydantic support
+All load methods support validation to pydantic models with the `validate_to` parameter:
+
+```python
+from junkpy import JunkParser
+from pydantic import BaseModel
+
+class TestModel(BaseModel):
+	key1: int
+	key2: str
+
+
+junk_parser = JunkParser()
+data = junk_parser.load_file("file.junk", validate_to=TestModel)
+
+assert isinstance(data, TestModel) # True
+
+```
 
 
 ### Custom Type Processors
